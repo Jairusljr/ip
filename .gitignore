@@ -1,3 +1,6 @@
+# Java Specific
+*.class
+
 # IDEA files
 /.idea/
 /out/
