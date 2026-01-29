@@ -29,24 +29,36 @@ public class Buddy {
                 System.out.println(horizontalLine);
             } else if (line.startsWith("mark")) {
                 int index = Integer.parseInt(line.substring(5)) - 1;
-                tasks[index].markAsDone();
-                System.out.println(horizontalLine);
-                System.out.println("Awesome! I've checked this off your list:");
-                System.out.println(tasks[index]);
-                System.out.println(horizontalLine);
+                if (index >= 0 && index < taskCount) {
+                    tasks[index].markAsDone();
+                    System.out.println(horizontalLine);
+                    System.out.println("Awesome! I've checked this off your list:");
+                    System.out.println(tasks[index]);
+                    System.out.println(horizontalLine);
+                } else {
+                    System.out.println(horizontalLine);
+                    System.out.println("Wait! That task number doesn't exist!");
+                    System.out.println(horizontalLine);
+                }
             } else if (line.startsWith("unmark")) {
                 int index = Integer.parseInt(line.substring(7)) - 1;
-                tasks[index].unmarkAsDone();
-                System.out.println(horizontalLine);
-                System.out.println("No problem, I've put this back on the list for you:");
-                System.out.println(tasks[index]);
-                System.out.println(horizontalLine);
+                if (index >= 0 && index < taskCount) {
+                    tasks[index].unmarkAsDone();
+                    System.out.println(horizontalLine);
+                    System.out.println("No problem, I've put this back on the list for you:");
+                    System.out.println(tasks[index]);
+                    System.out.println(horizontalLine);
+                } else {
+                    System.out.println(horizontalLine);
+                    System.out.println("Wait! That task number doesn't exist!");
+                    System.out.println(horizontalLine);
+                }
             } else {
                 tasks[taskCount] = new Task(line);
                 taskCount++;
                 System.out.println(horizontalLine);
                 System.out.println("Got it! I've added '" + line + "' to your pile.");
-                System.out.println("You now have " + (taskCount + 1) + " things on your list!");
+                System.out.println("You now have " + (taskCount) + " things on your list!");
                 System.out.println(horizontalLine);
             }
         }
