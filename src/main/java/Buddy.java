@@ -16,32 +16,38 @@ public class Buddy {
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
         printGreeting();
+        runCommandLoop(in);
+        printExitMessage();
+    }
 
+    private static void runCommandLoop(Scanner in) {
         while (true) {
             String line = in.nextLine();
 
-            if (line.equals("bye")) {
-                break;
+            if (line.equalsIgnoreCase("bye")) {
+                return;
             }
 
-            if (line.equals("list")) {
-                printTaskList();
-            } else if (line.startsWith("mark")) {
-                handleMarkTask(line);
-            } else if (line.startsWith("unmark")) {
-                handleUnmarkTask(line);
-            } else if (line.startsWith("todo")) {
-                addToDo(line);
-            } else if (line.startsWith("deadline")) {
-                addDeadline(line);
-            } else if (line.startsWith("event")) {
-                addEvent(line);
-            } else {
-                addNormalTask(line);
-            }
+            processCommand(line);
         }
+    }
 
-        printExitMessage();
+    private static void processCommand(String line) {
+        if (line.equals("list")) {
+            printTaskList();
+        } else if (line.startsWith("mark")) {
+            handleMarkTask(line);
+        } else if (line.startsWith("unmark")) {
+            handleUnmarkTask(line);
+        } else if (line.startsWith("todo")) {
+            addToDo(line);
+        } else if (line.startsWith("deadline")) {
+            addDeadline(line);
+        } else if (line.startsWith("event")) {
+            addEvent(line);
+        } else {
+            addNormalTask(line);
+        }
     }
 
     private static void printGreeting() {
