@@ -10,7 +10,7 @@ public class Buddy {
     public static final int MAX_TASKS = 100;
     public static final String HORIZONTAL_LINE = "____________________________________________________________";
 
-    private static Task[] tasks = new Task[MAX_TASKS];
+    private static final Task[] tasks = new Task[MAX_TASKS];
     private static int taskCount = 0;
 
     public static void main(String[] args) {
@@ -104,21 +104,21 @@ public class Buddy {
         tasks[taskCount] = new Todo(description);
         taskCount++;
         printTaskAdded(tasks[taskCount - 1], taskCount);
-    };
+    }
 
     private static void addDeadline(String line) {
         String[] parts = line.substring(DEADLINE_OFFSET).split(" /by ");
         tasks[taskCount] = new Deadline(parts[0], parts[1]);
         taskCount++;
         printTaskAdded(tasks[taskCount - 1], taskCount);
-    };
+    }
 
     private static void addEvent(String line) {
         String[] parts = line.substring(EVENT_OFFSET).split(" /from | /to ");
         tasks[taskCount] = new Event(parts[0], parts[1], parts[2]);
         taskCount++;
         printTaskAdded(tasks[taskCount - 1], taskCount);
-    };
+    }
 
     private static void addNormalTask(String line) {
         tasks[taskCount] = new Task(line);
