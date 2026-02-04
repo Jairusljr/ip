@@ -1,6 +1,11 @@
 import java.util.Scanner;
 
 public class Buddy {
+    private static final int TODO_OFFSET = 5;      // "todo "
+    private static final int DEADLINE_OFFSET = 9;  // "deadline "
+    private static final int EVENT_OFFSET = 6;     // "event "
+    private static final int MARK_OFFSET = 5;      // "mark "
+    private static final int UNMARK_OFFSET = 7;    // "unmark "
 
     public static final int MAX_TASKS = 100;
     public static final String HORIZONTAL_LINE = "____________________________________________________________";
@@ -55,7 +60,7 @@ public class Buddy {
     }
 
     private static void handleMarkTask(String line) {
-        int index = Integer.parseInt(line.substring(5)) - 1;
+        int index = Integer.parseInt(line.substring(MARK_OFFSET)) - 1;
 
         if (index < 0 || index >= taskCount) {
             System.out.println(HORIZONTAL_LINE);
@@ -72,7 +77,7 @@ public class Buddy {
     }
 
     private static void handleUnmarkTask(String line) {
-        int index = Integer.parseInt(line.substring(7)) - 1;
+        int index = Integer.parseInt(line.substring(UNMARK_OFFSET)) - 1;
 
         if (index < 0 || index >= taskCount) {
             System.out.println(HORIZONTAL_LINE);
@@ -89,21 +94,21 @@ public class Buddy {
     }
 
     private static void addToDo(String line) {
-        String description = line.substring(5).trim();
+        String description = line.substring(TODO_OFFSET).trim();
         tasks[taskCount] = new Todo(description);
         taskCount++;
         printTaskAdded(tasks[taskCount - 1], taskCount);
     };
 
     private static void addDeadline(String line) {
-        String[] parts = line.substring(9).split(" /by ");
+        String[] parts = line.substring(DEADLINE_OFFSET).split(" /by ");
         tasks[taskCount] = new Deadline(parts[0], parts[1]);
         taskCount++;
         printTaskAdded(tasks[taskCount - 1], taskCount);
     };
 
     private static void addEvent(String line) {
-        String[] parts = line.substring(6).split(" /from | /to ");
+        String[] parts = line.substring(EVENT_OFFSET).split(" /from | /to ");
         tasks[taskCount] = new Event(parts[0], parts[1], parts[2]);
         taskCount++;
         printTaskAdded(tasks[taskCount - 1], taskCount);
