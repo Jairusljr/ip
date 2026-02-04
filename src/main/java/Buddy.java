@@ -1,11 +1,11 @@
 import java.util.Scanner;
 
 public class Buddy {
-    private static final int TODO_OFFSET = 5;      // "todo "
-    private static final int DEADLINE_OFFSET = 9;  // "deadline "
-    private static final int EVENT_OFFSET = 6;     // "event "
-    private static final int MARK_OFFSET = 5;      // "mark "
-    private static final int UNMARK_OFFSET = 7;    // "unmark "
+    private static final int TODO_OFFSET = 5;
+    private static final int DEADLINE_OFFSET = 9;
+    private static final int EVENT_OFFSET = 6;
+    private static final int MARK_OFFSET = 5;
+    private static final int UNMARK_OFFSET = 7;
 
     public static final int MAX_TASKS = 100;
     public static final String HORIZONTAL_LINE = "____________________________________________________________";
@@ -69,33 +69,36 @@ public class Buddy {
         int index = Integer.parseInt(line.substring(MARK_OFFSET)) - 1;
 
         if (index < 0 || index >= taskCount) {
-            System.out.println(HORIZONTAL_LINE);
-            System.out.println("Wait! That task number doesn't exist!");
-            System.out.println(HORIZONTAL_LINE);
+            printErrorMessage();
             return;
         }
 
-        System.out.println(HORIZONTAL_LINE);
         tasks[index].markAsDone();
-        System.out.println("Awesome! I've checked this off your list:");
-        System.out.println(tasks[index]);
-        System.out.println(HORIZONTAL_LINE);
+        printStatusUpdate("Awesome! I've checked this off your list:", tasks[index]);
     }
 
     private static void handleUnmarkTask(String line) {
         int index = Integer.parseInt(line.substring(UNMARK_OFFSET)) - 1;
 
         if (index < 0 || index >= taskCount) {
-            System.out.println(HORIZONTAL_LINE);
-            System.out.println("Wait! That task number doesn't exist!");
-            System.out.println(HORIZONTAL_LINE);
+            printErrorMessage();
             return;
         }
 
-        System.out.println(HORIZONTAL_LINE);
         tasks[index].unmarkAsDone();
-        System.out.println("No problem, I've put this back on the list for you:");
-        System.out.println(tasks[index]);
+        printStatusUpdate("No problem, I've put this back on the list for you:", tasks[index]);
+    }
+
+    private static void printErrorMessage() {
+        System.out.println(HORIZONTAL_LINE);
+        System.out.println("That task number doesn't exist!");
+        System.out.println(HORIZONTAL_LINE);
+    }
+
+    private static void printStatusUpdate(String message, Task task) {
+        System.out.println(HORIZONTAL_LINE);
+        System.out.println(message);
+        System.out.println(task);
         System.out.println(HORIZONTAL_LINE);
     }
 
