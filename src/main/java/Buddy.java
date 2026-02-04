@@ -56,27 +56,35 @@ public class Buddy {
 
     private static void handleMarkTask(String line) {
         int index = Integer.parseInt(line.substring(5)) - 1;
-        System.out.println(HORIZONTAL_LINE);
-        if (index >= 0 && index < taskCount) {
-            tasks[index].markAsDone();
-            System.out.println("Awesome! I've checked this off your list:");
-            System.out.println(tasks[index]);
-        } else {
+
+        if (index < 0 || index >= taskCount) {
+            System.out.println(HORIZONTAL_LINE);
             System.out.println("Wait! That task number doesn't exist!");
+            System.out.println(HORIZONTAL_LINE);
+            return;
         }
+
+        System.out.println(HORIZONTAL_LINE);
+        tasks[index].markAsDone();
+        System.out.println("Awesome! I've checked this off your list:");
+        System.out.println(tasks[index]);
         System.out.println(HORIZONTAL_LINE);
     }
 
     private static void handleUnmarkTask(String line) {
         int index = Integer.parseInt(line.substring(7)) - 1;
-        System.out.println(HORIZONTAL_LINE);
-        if (index >= 0 && index < taskCount) {
-            tasks[index].unmarkAsDone();
-            System.out.println("No problem, I've put this back on the list for you:");
-            System.out.println(tasks[index]);
-        } else {
+
+        if (index < 0 || index >= taskCount) {
+            System.out.println(HORIZONTAL_LINE);
             System.out.println("Wait! That task number doesn't exist!");
+            System.out.println(HORIZONTAL_LINE);
+            return;
         }
+
+        System.out.println(HORIZONTAL_LINE);
+        tasks[index].unmarkAsDone();
+        System.out.println("No problem, I've put this back on the list for you:");
+        System.out.println(tasks[index]);
         System.out.println(HORIZONTAL_LINE);
     }
 
