@@ -5,11 +5,11 @@ public class Buddy {
     public static final int MAX_TASKS = 100;
     public static final String HORIZONTAL_LINE = "____________________________________________________________";
 
+    private static Task[] tasks = new Task[MAX_TASKS];
+    private static int taskCount = 0;
+
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
-        Task[] tasks = new Task[MAX_TASKS];
-        int taskCount = 0;
-
         printGreeting();
 
         while (true) {
@@ -20,15 +20,19 @@ public class Buddy {
             }
 
             if (line.equals("list")) {
-                printTaskList(tasks, taskCount);
+                printTaskList();
             } else if (line.startsWith("mark")) {
-                handleMarkTask(line, tasks, taskCount);
+                handleMarkTask(line);
             } else if (line.startsWith("unmark")) {
-                handleUnmarkTask(line, tasks, taskCount);
+                handleUnmarkTask(line);
+            } else if (line.startsWith("todo")) {
+                addToDo(line);
+            } else if (line.startsWith("deadline")) {
+                addDeadline(line);
+            } else if (line.startsWith("event")) {
+                addEvent(line);
             } else {
-                tasks[taskCount] = new Task(line);
-                taskCount++;
-                printTaskAdded(line, taskCount);
+                addNormalTask(line);
             }
         }
 
@@ -42,7 +46,7 @@ public class Buddy {
         System.out.println(HORIZONTAL_LINE);
     }
 
-    private static void printTaskList(Task[] tasks, int taskCount) {
+    private static void printTaskList() {
         System.out.println(HORIZONTAL_LINE);
         for (int i = 0; i < taskCount; i++) {
             System.out.println((i + 1) + ". " + tasks[i]);
@@ -50,7 +54,7 @@ public class Buddy {
         System.out.println(HORIZONTAL_LINE);
     }
 
-    private static void handleMarkTask(String line, Task[] tasks, int taskCount) {
+    private static void handleMarkTask(String line) {
         int index = Integer.parseInt(line.substring(5)) - 1;
         System.out.println(HORIZONTAL_LINE);
         if (index >= 0 && index < taskCount) {
@@ -63,7 +67,7 @@ public class Buddy {
         System.out.println(HORIZONTAL_LINE);
     }
 
-    private static void handleUnmarkTask(String line, Task[] tasks, int taskCount) {
+    private static void handleUnmarkTask(String line) {
         int index = Integer.parseInt(line.substring(7)) - 1;
         System.out.println(HORIZONTAL_LINE);
         if (index >= 0 && index < taskCount) {
@@ -76,9 +80,36 @@ public class Buddy {
         System.out.println(HORIZONTAL_LINE);
     }
 
-    private static void printTaskAdded(String description, int taskCount) {
+    private static void addToDo(String line) {
+        String description = line.substring(5).trim();
+        tasks[taskCount] = new Todo(description);
+        taskCount++;
+        printTaskAdded(tasks[taskCount - 1], taskCount);
+    };
+
+    private static void addDeadline(String line) {
+        String[] parts = line.substring(9).split(" /by ");
+        tasks[taskCount] = new Deadline(parts[0], parts[1]);
+        taskCount++;
+        printTaskAdded(tasks[taskCount - 1], taskCount);
+    };
+
+    private static void addEvent(String line) {
+        String[] parts = line.substring(6).split(" /from | /to ");
+        tasks[taskCount] = new Event(parts[0], parts[1], parts[2]);
+        taskCount++;
+        printTaskAdded(tasks[taskCount - 1], taskCount);
+    };
+
+    private static void addNormalTask(String line) {
+        tasks[taskCount] = new Task(line);
+        taskCount++;
+        printTaskAdded(tasks[taskCount - 1], taskCount);
+    }
+
+    private static void printTaskAdded(Task task, int taskCount) {
         System.out.println(HORIZONTAL_LINE);
-        System.out.println("Got it! I've added '" + description + "' to your pile.");
+        System.out.println("Got it! I've added '" + task + "' to your pile.");
         System.out.println("You now have " + taskCount + " things on your list!");
         System.out.println(HORIZONTAL_LINE);
     }
