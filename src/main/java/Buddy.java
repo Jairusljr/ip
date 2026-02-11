@@ -27,12 +27,21 @@ public class Buddy {
             if (line.equalsIgnoreCase("bye")) {
                 return;
             }
-
-            processCommand(line);
+            try {
+                processCommand(line);
+            } catch (InvalidTask e) {
+                printErrorBox(e.getMessage());
+            }
         }
     }
 
-    private static void processCommand(String line) {
+    private static void printErrorBox(String message) {
+        System.out.println(HORIZONTAL_LINE);
+        System.out.println(" OOPS!!! " + message);
+        System.out.println(HORIZONTAL_LINE);
+    }
+
+    private static void processCommand(String line) throws InvalidTask {
         if (line.equals("list")) {
             printTaskList();
         } else if (line.startsWith("mark")) {
@@ -46,7 +55,7 @@ public class Buddy {
         } else if (line.startsWith("event")) {
             addEvent(line);
         } else {
-            addNormalTask(line);
+            throw new InvalidTask("Whimper... I don't recognize that command. Try 'todo', 'deadline', or 'event'!");
         }
     }
 
@@ -65,34 +74,42 @@ public class Buddy {
         System.out.println(HORIZONTAL_LINE);
     }
 
-    private static void handleMarkTask(String line) {
-        int index = Integer.parseInt(line.substring(MARK_OFFSET)) - 1;
+    private static void handleMarkTask(String line) throws InvalidTask {
+        try {
+            if (line.trim().length() <= MARK_OFFSET - 1) {
+                throw new InvalidTask("Which task number am I marking? Use: mark [number]");
+            }
 
-        if (index < 0 || index >= taskCount) {
-            printErrorMessage();
-            return;
+            int index = Integer.parseInt(line.substring(MARK_OFFSET)) - 1;
+
+            if (index < 0 || index >= taskCount) {
+                throw new InvalidTask("I can't mark that... Task " + (index + 1) + " doesn't exist!");
+            }
+
+            tasks[index].markAsDone();
+            printStatusUpdate("Awesome! I've checked this off your list:", tasks[index]);
+        } catch (NumberFormatException e) {
+            throw new InvalidTask("I need a number to mark the task, not words!");
         }
-
-        tasks[index].markAsDone();
-        printStatusUpdate("Awesome! I've checked this off your list:", tasks[index]);
     }
 
-    private static void handleUnmarkTask(String line) {
-        int index = Integer.parseInt(line.substring(UNMARK_OFFSET)) - 1;
+    private static void handleUnmarkTask(String line) throws InvalidTask {
+        try {
+            if (line.trim().length() <= UNMARK_OFFSET - 1) {
+                throw new InvalidTask("Which task number am I unmarking? Use: unmark [number]");
+            }
 
-        if (index < 0 || index >= taskCount) {
-            printErrorMessage();
-            return;
+            int index = Integer.parseInt(line.substring(UNMARK_OFFSET)) - 1;
+
+            if (index < 0 || index >= taskCount) {
+                throw new InvalidTask("I can't mark that... Task " + (index + 1) + " doesn't exist!");
+            }
+
+            tasks[index].unmarkAsDone();
+            printStatusUpdate("No problem, I've put this back on the list for you:", tasks[index]);
+        } catch (NumberFormatException e) {
+            throw new InvalidTask("I need a number to unmark the task, not words!");
         }
-
-        tasks[index].unmarkAsDone();
-        printStatusUpdate("No problem, I've put this back on the list for you:", tasks[index]);
-    }
-
-    private static void printErrorMessage() {
-        System.out.println(HORIZONTAL_LINE);
-        System.out.println("That task number doesn't exist!");
-        System.out.println(HORIZONTAL_LINE);
     }
 
     private static void printStatusUpdate(String message, Task task) {
@@ -102,29 +119,45 @@ public class Buddy {
         System.out.println(HORIZONTAL_LINE);
     }
 
-    private static void addToDo(String line) {
+    private static void addToDo(String line) throws InvalidTask {
+        if (line.trim().length() <= TODO_OFFSET) {
+            throw new InvalidTask("What am I supposed to do??");
+        }
+
         String description = line.substring(TODO_OFFSET).trim();
         tasks[taskCount] = new Todo(description);
         taskCount++;
         printTaskAdded(tasks[taskCount - 1], taskCount);
     }
 
-    private static void addDeadline(String line) {
+    private static void addDeadline(String line) throws InvalidTask {
+        if (!line.contains(" /by ")) {
+            throw new InvalidTask("When am I supposed to do this by?? Please add a '/by' time!");
+        }
+
         String[] parts = line.substring(DEADLINE_OFFSET).split(" /by ");
+
+        if (parts[0].trim().isEmpty() || parts[1].trim().isEmpty()) {
+            throw new InvalidTask("Hello please fill in the description and deadline time!!");
+        }
+
         tasks[taskCount] = new Deadline(parts[0], parts[1]);
         taskCount++;
         printTaskAdded(tasks[taskCount - 1], taskCount);
     }
 
-    private static void addEvent(String line) {
-        String[] parts = line.substring(EVENT_OFFSET).split(" /from | /to ");
-        tasks[taskCount] = new Event(parts[0], parts[1], parts[2]);
-        taskCount++;
-        printTaskAdded(tasks[taskCount - 1], taskCount);
-    }
+    private static void addEvent(String line) throws InvalidTask {
+        if (!line.contains(" /from") || !line.contains(" /to")) {
+            throw new InvalidTask("When does this event start and end?? Please add a '/from' and '/to' time!");
+        };
 
-    private static void addNormalTask(String line) {
-        tasks[taskCount] = new Task(line);
+        String[] parts = line.substring(EVENT_OFFSET).split(" /from | /to ");
+
+        if (parts.length < 3 || parts[0].trim().isEmpty() || parts[1].trim().isEmpty() || parts[2].trim().isEmpty()) {
+            throw new InvalidTask("Your event is missing details! Format: event [name] /from [start] /to [end]!!");
+        }
+
+        tasks[taskCount] = new Event(parts[0], parts[1], parts[2]);
         taskCount++;
         printTaskAdded(tasks[taskCount - 1], taskCount);
     }
