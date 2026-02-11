@@ -1,4 +1,10 @@
+package buddy;
+
 import java.util.Scanner;
+import buddy.task.Deadline;
+import buddy.task.Event;
+import buddy.task.Task;
+import buddy.task.Todo;
 
 /**
  * Represents the main chatbot Buddy, a loyal task tracker.
@@ -67,7 +73,7 @@ public class Buddy {
             addEvent(line);
         } else {
             throw new BuddyException("Whimper... I don't recognize that command. " +
-                    "Try 'todo', 'deadline', or 'event'!");
+                    "Try 'list', 'mark', 'unmark', 'todo', 'deadline', or 'event'!");
         }
     }
 
@@ -116,7 +122,7 @@ public class Buddy {
             int index = Integer.parseInt(line.substring(UNMARK_OFFSET)) - 1;
 
             if (index < 0 || index >= taskCount) {
-                throw new BuddyException("I can't mark that... Task " + (index + 1) + " doesn't exist!");
+                throw new BuddyException("I can't unmark that... Task " + (index + 1) + " doesn't exist!");
             }
 
             tasks[index].unmarkAsDone();
