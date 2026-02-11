@@ -11,8 +11,8 @@ public class Buddy {
     private static final int EVENT_OFFSET = 6;
     private static final int MARK_OFFSET = 5;
     private static final int UNMARK_OFFSET = 7;
-    public static final int MAX_TASKS = 100;
-    public static final String HORIZONTAL_LINE = "____________________________________________________________";
+    private static final int MAX_TASKS = 100;
+    private static final String HORIZONTAL_LINE = "____________________________________________________________";
 
     // Data Fields
     private static final Task[] tasks = new Task[MAX_TASKS];
@@ -37,15 +37,16 @@ public class Buddy {
             if (line.equalsIgnoreCase("bye")) {
                 return;
             }
+
             try {
                 processCommand(line);
             } catch (BuddyException e) {
-                printErrorBox(e.getMessage());
+                printErrorMessage(e.getMessage());
             }
         }
     }
 
-    private static void printErrorBox(String message) {
+    private static void printErrorMessage(String message) {
         System.out.println(HORIZONTAL_LINE);
         System.out.println(" OOPS!!! " + message);
         System.out.println(HORIZONTAL_LINE);
@@ -65,7 +66,8 @@ public class Buddy {
         } else if (line.startsWith("event")) {
             addEvent(line);
         } else {
-            throw new BuddyException("Whimper... I don't recognize that command. Try 'todo', 'deadline', or 'event'!");
+            throw new BuddyException("Whimper... I don't recognize that command. " +
+                    "Try 'todo', 'deadline', or 'event'!");
         }
     }
 
@@ -86,8 +88,9 @@ public class Buddy {
 
     private static void handleMarkTask(String line) throws BuddyException {
         try {
-            if (line.trim().length() <= MARK_OFFSET - 1) {
-                throw new BuddyException("Which task number am I marking? Use: mark [number]");
+            if (line.trim().length() < MARK_OFFSET) {
+                throw new BuddyException("Which task number am I marking? " +
+                        "Format: mark [number]");
             }
 
             int index = Integer.parseInt(line.substring(MARK_OFFSET)) - 1;
@@ -105,8 +108,9 @@ public class Buddy {
 
     private static void handleUnmarkTask(String line) throws BuddyException {
         try {
-            if (line.trim().length() <= UNMARK_OFFSET - 1) {
-                throw new BuddyException("Which task number am I unmarking? Use: unmark [number]");
+            if (line.trim().length() < UNMARK_OFFSET) {
+                throw new BuddyException("Which task number am I unmarking? " +
+                        "Format: unmark [number]");
             }
 
             int index = Integer.parseInt(line.substring(UNMARK_OFFSET)) - 1;
@@ -142,13 +146,15 @@ public class Buddy {
 
     private static void addDeadline(String line) throws BuddyException {
         if (!line.contains(" /by ")) {
-            throw new BuddyException("When am I supposed to do this by?? Format: deadline [name] /by [deadline]!");
+            throw new BuddyException("When am I supposed to do this by?? " +
+                    "Format: deadline [name] /by [deadline]!");
         }
 
-        String[] parts = line.substring(DEADLINE_OFFSET).split(" /by ");
+        String[] parts = line.substring(DEADLINE_OFFSET).split(" /by ", 2);
 
         if (parts[0].trim().isEmpty() || parts[1].trim().isEmpty()) {
-            throw new BuddyException("Hello please fill in the description and deadline time!! Format: deadline [name] /by [deadline]!");
+            throw new BuddyException("Hello please fill in the description and deadline time!! " +
+                    "Format: deadline [name] /by [deadline]!");
         }
 
         tasks[taskCount] = new Deadline(parts[0], parts[1]);
@@ -158,13 +164,15 @@ public class Buddy {
 
     private static void addEvent(String line) throws BuddyException {
         if (!line.contains(" /from") || !line.contains(" /to")) {
-            throw new BuddyException("When does this event start and end?? Format: event [name] /from [start] /to [end]!!");
-        };
+            throw new BuddyException("When does this event start and end?? " +
+                    "Format: event [name] /from [start] /to [end]!!");
+        }
 
-        String[] parts = line.substring(EVENT_OFFSET).split(" /from | /to ");
+        String[] parts = line.substring(EVENT_OFFSET).split(" /from | /to ", 3);
 
         if (parts.length < 3 || parts[0].trim().isEmpty() || parts[1].trim().isEmpty() || parts[2].trim().isEmpty()) {
-            throw new BuddyException("Your event is missing details! Format: event [name] /from [start] /to [end]!!");
+            throw new BuddyException("Your event is missing details! " +
+                    "Format: event [name] /from [start] /to [end]!!");
         }
 
         tasks[taskCount] = new Event(parts[0], parts[1], parts[2]);
