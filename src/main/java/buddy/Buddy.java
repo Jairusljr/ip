@@ -72,9 +72,36 @@ public class Buddy {
             addDeadline(line);
         } else if (line.startsWith("event")) {
             addEvent(line);
+        } else if (line.startsWith("delete")) {
+            deleteTask(line);
         } else {
             throw new BuddyException("Whimper... I don't recognize that command. " +
                     "Try 'list', 'mark', 'unmark', 'todo', 'deadline', or 'event'!");
+        }
+    }
+
+    public static void deleteTask(String line) throws BuddyException {
+        try {
+            if (line.trim().length() < DELETE_OFFSET) {
+                throw new BuddyException("Which task I supposed to delete?? Format: delete [task number]");
+            }
+
+            int index = Integer.parseInt(line.substring(DELETE_OFFSET)) - 1;
+
+            if (index < 0 || index >= tasks.size()) {
+                throw new BuddyException("I can't delete that... Task " + (index + 1) + " doesn't exist!");
+            }
+
+            Task removedTask = tasks.remove(index);
+
+            System.out.println(HORIZONTAL_LINE);
+            System.out.println("Noted. I've removed this task:");
+            System.out.println(removedTask);
+            System.out.println("Now you have " + tasks.size() + " tasks in the list.");
+            System.out.println(HORIZONTAL_LINE);
+
+        } catch (NumberFormatException e) {
+            throw new BuddyException("I need a number to delete the task, not words!");
         }
     }
 
