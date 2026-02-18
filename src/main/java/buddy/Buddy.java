@@ -1,6 +1,7 @@
 package buddy;
 
 import java.util.Scanner;
+import java.util.ArrayList;
 import buddy.task.Deadline;
 import buddy.task.Event;
 import buddy.task.Task;
@@ -18,11 +19,11 @@ public class Buddy {
     private static final int MARK_OFFSET = 5;
     private static final int UNMARK_OFFSET = 7;
     private static final int MAX_TASKS = 100;
+    private static final int DELETE_OFFSET = 7;
     private static final String HORIZONTAL_LINE = "____________________________________________________________";
 
     // Data Fields
-    private static final Task[] tasks = new Task[MAX_TASKS];
-    private static int taskCount = 0;
+    private static final ArrayList<Task> tasks = new ArrayList<>();
 
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
@@ -86,8 +87,8 @@ public class Buddy {
 
     private static void printTaskList() {
         System.out.println(HORIZONTAL_LINE);
-        for (int i = 0; i < taskCount; i++) {
-            System.out.println((i + 1) + ". " + tasks[i]);
+        for (int i = 0; i < tasks.size(); i++) {
+            System.out.println((i + 1) + ". " + tasks.get(i));
         }
         System.out.println(HORIZONTAL_LINE);
     }
@@ -101,12 +102,12 @@ public class Buddy {
 
             int index = Integer.parseInt(line.substring(MARK_OFFSET)) - 1;
 
-            if (index < 0 || index >= taskCount) {
+            if (index < 0 || index >= tasks.size()) {
                 throw new BuddyException("I can't mark that... Task " + (index + 1) + " doesn't exist!");
             }
 
-            tasks[index].markAsDone();
-            printStatusUpdate("Awesome! I've checked this off your list:", tasks[index]);
+            tasks.get(index).markAsDone();
+            printStatusUpdate("Awesome! I've checked this off your list:", tasks.get(index));
         } catch (NumberFormatException e) {
             throw new BuddyException("I need a number to mark the task, not words!");
         }
@@ -121,12 +122,12 @@ public class Buddy {
 
             int index = Integer.parseInt(line.substring(UNMARK_OFFSET)) - 1;
 
-            if (index < 0 || index >= taskCount) {
+            if (index < 0 || index >= tasks.size()) {
                 throw new BuddyException("I can't unmark that... Task " + (index + 1) + " doesn't exist!");
             }
 
-            tasks[index].unmarkAsDone();
-            printStatusUpdate("No problem, I've put this back on the list for you:", tasks[index]);
+            tasks.get(index).unmarkAsDone();
+            printStatusUpdate("No problem, I've put this back on the list for you:", tasks.get(index));
         } catch (NumberFormatException e) {
             throw new BuddyException("I need a number to unmark the task, not words!");
         }
@@ -145,9 +146,9 @@ public class Buddy {
         }
 
         String description = line.substring(TODO_OFFSET).trim();
-        tasks[taskCount] = new Todo(description);
-        taskCount++;
-        printTaskAdded(tasks[taskCount - 1], taskCount);
+        Task newTask = new Todo(description);
+        tasks.add(newTask);
+        printTaskAdded(newTask, tasks.size());
     }
 
     private static void addDeadline(String line) throws BuddyException {
@@ -163,9 +164,9 @@ public class Buddy {
                     "Format: deadline [name] /by [deadline]!");
         }
 
-        tasks[taskCount] = new Deadline(parts[0], parts[1]);
-        taskCount++;
-        printTaskAdded(tasks[taskCount - 1], taskCount);
+        Task newTask = new Deadline(parts[0], parts[1]);
+        tasks.add(newTask);
+        printTaskAdded(newTask, tasks.size());
     }
 
     private static void addEvent(String line) throws BuddyException {
@@ -181,9 +182,9 @@ public class Buddy {
                     "Format: event [name] /from [start] /to [end]!!");
         }
 
-        tasks[taskCount] = new Event(parts[0], parts[1], parts[2]);
-        taskCount++;
-        printTaskAdded(tasks[taskCount - 1], taskCount);
+        Task newTask = new Event(parts[0], parts[1], parts[2]);
+        tasks.add(newTask);
+        printTaskAdded(newTask, tasks.size());
     }
 
     private static void printTaskAdded(Task task, int taskCount) {
