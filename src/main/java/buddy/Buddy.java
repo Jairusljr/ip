@@ -188,6 +188,7 @@ public class Buddy {
             }
 
             Task removedTask = tasks.remove(index);
+            saveTasks();
 
             System.out.println(HORIZONTAL_LINE);
             System.out.println("Noted. I've removed this task:");
