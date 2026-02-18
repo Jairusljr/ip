@@ -2,6 +2,10 @@ package buddy;
 
 import java.util.Scanner;
 import java.util.ArrayList;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import buddy.task.Deadline;
 import buddy.task.Event;
 import buddy.task.Task;
@@ -12,13 +16,14 @@ import buddy.task.Todo;
  * Handles user input and manages the task list.
  */
 public class Buddy {
+    private static final String FILE_PATH = "./data/buddy.txt";
+    private static final String DIR_PATH = "./data/";
     // Constants
     private static final int TODO_OFFSET = 5;
     private static final int DEADLINE_OFFSET = 9;
     private static final int EVENT_OFFSET = 6;
     private static final int MARK_OFFSET = 5;
     private static final int UNMARK_OFFSET = 7;
-    private static final int MAX_TASKS = 100;
     private static final int DELETE_OFFSET = 7;
     private static final String HORIZONTAL_LINE = "____________________________________________________________";
 
@@ -26,10 +31,100 @@ public class Buddy {
     private static final ArrayList<Task> tasks = new ArrayList<>();
 
     public static void main(String[] args) {
+        loadTasks();
         Scanner in = new Scanner(System.in);
         printGreeting();
         runCommandLoop(in);
         printExitMessage();
+    }
+
+    private static void loadDataFile() throws IOException {
+        // Represent the directory as a File object
+        File directory = new File(DIR_PATH);
+        if (!directory.exists()) {
+            // Create the directory if it does not exist
+            directory.mkdirs();
+        }
+
+        // Represent the data file as a File object
+        File file = new File(FILE_PATH);
+        if (!file.exists()) {
+            // Atomically create the new empty file if it doesn't exist
+            file.createNewFile();
+        }
+    }
+
+    private static void loadTasks() {
+        try {
+            loadDataFile();
+            File f = new File(FILE_PATH);
+            Scanner s = new Scanner(f);
+
+            while (s.hasNext()) {
+                String line = s.nextLine();
+                String[] parts = line.split(" \\| ");
+                if (parts.length < 3) continue;
+
+                String type = parts[0];
+                boolean isDone = parts[1].equals("1");
+                String desc = parts[2];
+
+                Task task = null;
+                switch (type) {
+                case "T":
+                    task = new Todo(desc);
+                    break;
+                case "D":
+                    task = new Deadline(desc, parts[3]);
+                    break;
+                case "E":
+                    task = new Event(desc, parts[3], parts[4]);
+                    break;
+                }
+
+                if (task != null) {
+                    if (isDone) task.markAsDone();
+                    tasks.add(task);
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Woof! I couldn't load your previous list. Starting fresh!");
+        }
+    }
+
+    private static void saveTasks() {
+        try {
+            FileWriter fw = new FileWriter(FILE_PATH);
+            for (Task t : tasks) {
+                fw.write(formatTaskForFile(t) + System.lineSeparator());
+            }
+            fw.close();
+        } catch (IOException e) {
+            System.out.println("Whimper... I couldn't save your tasks!");
+        }
+    }
+
+    private static String formatTaskForFile(Task t) {
+        String type = "";
+        String status = "";
+        String extra = "";
+
+        if (t.isDone()) {
+            status = "1";
+        } else {
+            status = "0";
+        }
+        
+        if (t instanceof Todo) {
+            type = "T";
+        } else if (t instanceof Deadline) {
+            type = "D";
+            extra = " | " + ((Deadline) t).getBy();
+        } else if (t instanceof Event) {
+            type = "E";
+            extra = " | " + ((Event) t).getFrom() + " | " + ((Event) t).getTo();
+        }
+        return type + " | " + status + " | " + t.getDescription() + extra;
     }
 
     /**
@@ -134,6 +229,7 @@ public class Buddy {
             }
 
             tasks.get(index).markAsDone();
+            saveTasks();
             printStatusUpdate("Awesome! I've checked this off your list:", tasks.get(index));
         } catch (NumberFormatException e) {
             throw new BuddyException("I need a number to mark the task, not words!");
@@ -152,8 +248,8 @@ public class Buddy {
             if (index < 0 || index >= tasks.size()) {
                 throw new BuddyException("I can't unmark that... Task " + (index + 1) + " doesn't exist!");
             }
-
             tasks.get(index).unmarkAsDone();
+            saveTasks();
             printStatusUpdate("No problem, I've put this back on the list for you:", tasks.get(index));
         } catch (NumberFormatException e) {
             throw new BuddyException("I need a number to unmark the task, not words!");
@@ -175,6 +271,7 @@ public class Buddy {
         String description = line.substring(TODO_OFFSET).trim();
         Task newTask = new Todo(description);
         tasks.add(newTask);
+        saveTasks();
         printTaskAdded(newTask, tasks.size());
     }
 
@@ -193,6 +290,7 @@ public class Buddy {
 
         Task newTask = new Deadline(parts[0], parts[1]);
         tasks.add(newTask);
+        saveTasks();
         printTaskAdded(newTask, tasks.size());
     }
 
@@ -208,9 +306,9 @@ public class Buddy {
             throw new BuddyException("Your event is missing details! " +
                     "Format: event [name] /from [start] /to [end]!!");
         }
-
         Task newTask = new Event(parts[0], parts[1], parts[2]);
         tasks.add(newTask);
+        saveTasks();
         printTaskAdded(newTask, tasks.size());
     }
 
