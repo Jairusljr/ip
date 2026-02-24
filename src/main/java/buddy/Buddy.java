@@ -1,5 +1,6 @@
 package buddy;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 import buddy.task.Task;
 import buddy.task.Todo;
@@ -85,9 +86,12 @@ public class Buddy {
         case "delete":
             deleteTask(line);
             break;
+        case "find":
+            handleFind(line);
+            break;
         default:
             throw new BuddyException("Whimper... I don't recognize that command. " +
-                    "Try 'list', 'mark', 'unmark', 'todo', 'deadline', or 'event'!");
+                    "Try 'list', 'mark', 'unmark', 'todo', 'deadline', 'event', 'delete' or 'find'!");
         }
     }
 
@@ -131,5 +135,16 @@ public class Buddy {
         Task removedTask = tasks.remove(index);
         storage.saveTasks(tasks.getAllTasks());
         ui.printTaskDeleted(removedTask, tasks.size());
+    }
+
+    private void handleFind(String line) throws BuddyException {
+        String keyword = Parser.parseFindKeyword(line);
+        ArrayList<Task> matchingTasks = tasks.findTasks(keyword);
+
+        if (matchingTasks.isEmpty()) {
+            ui.printErrorMessage("I couldn't find any tasks containing " + keyword +"!");
+        } else {
+            ui.printMatchingTasks(matchingTasks,keyword);
+        }
     }
 }

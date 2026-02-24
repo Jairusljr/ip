@@ -14,6 +14,7 @@ public class Parser {
     private static final int MARK_OFFSET = 5;
     private static final int UNMARK_OFFSET = 7;
     private static final int DELETE_OFFSET = 7;
+    private static final int FIND_OFFSET = 5;
 
     public static String getCommandWord(String input) {
         return input.trim().split(" ")[0].toLowerCase();
@@ -93,5 +94,13 @@ public class Parser {
             throw new BuddyException("Please fill in the description and deadline time!! " +
                     "Format: deadline [name] /by yyyy-mm-dd");
         }
+    }
+
+    public static String parseFindKeyword(String input) throws BuddyException {
+        String trimmed = input.trim();
+        if (trimmed.length() <= FIND_OFFSET) {
+            throw new BuddyException("What am I looking for?? Format: find [keyword]");
+        }
+        return trimmed.substring(FIND_OFFSET).trim();
     }
 }
