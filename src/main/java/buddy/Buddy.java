@@ -1,7 +1,6 @@
 package buddy;
 
 import java.util.ArrayList;
-import java.util.Scanner;
 import buddy.task.Task;
 import buddy.task.Todo;
 
@@ -32,34 +31,22 @@ public class Buddy {
 
     public void run() {
         ui.printGreeting();
-        Scanner in = new Scanner(System.in);
-        runCommandLoop(in);
-        ui.printExitMessage();
-    }
-
-    private static final String FILE_PATH = "./data/buddy.txt";
-    private static final String DIR_PATH = "./data/";
-
-    /**
-     * Reads and processes user commands until 'bye' is received.
-     *
-     * @param in The Scanner object for reading input.
-     */
-    private void runCommandLoop(Scanner in) {
         while (true) {
-            String line = in.nextLine();
-
+            String line = ui.readCommand();
             if (line.equalsIgnoreCase("bye")) {
-                return;
+                break;
             }
-
             try {
                 processCommand(line);
             } catch (BuddyException e) {
                 ui.printErrorMessage(e.getMessage());
             }
         }
+        ui.printExitMessage();
     }
+
+    private static final String FILE_PATH = "./data/buddy.txt";
+    private static final String DIR_PATH = "./data/";
 
     private void processCommand(String line) throws BuddyException {
         String commandWord = Parser.getCommandWord(line);
