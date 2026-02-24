@@ -1,5 +1,7 @@
 package buddy;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.io.File;
@@ -54,7 +56,15 @@ public class Storage {
                     task = new Todo(desc);
                     break;
                 case "D":
-                    task = new Deadline(desc, parts[3]);
+                    try {
+                        // parts[3] is where the date string 'yyyy-mm-dd' should be
+                        LocalDate date = LocalDate.parse(parts[3].trim());
+                        task = new Deadline(desc, date);
+                    } catch (DateTimeParseException e) {
+                        // If the date in the file is corrupted, skip it or handle the error
+                        System.out.println("Skipping a corrupted deadline date in your save file...");
+                        continue;
+                    }
                     break;
                 case "E":
                     task = new Event(desc, parts[3], parts[4]);
@@ -99,7 +109,7 @@ public class Storage {
             type = "T";
         } else if (t instanceof Deadline) {
             type = "D";
-            extra = " | " + ((Deadline) t).getBy();
+            extra = " | " + ((Deadline) t).getBy().toString();
         } else if (t instanceof Event) {
             type = "E";
             extra = " | " + ((Event) t).getFrom() + " | " + ((Event) t).getTo();

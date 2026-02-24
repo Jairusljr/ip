@@ -4,6 +4,9 @@ import buddy.task.Deadline;
 import buddy.task.Event;
 import buddy.task.Todo;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+
 public class Parser {
     private static final int TODO_OFFSET = 5;
     private static final int DEADLINE_OFFSET = 9;
@@ -23,18 +26,18 @@ public class Parser {
         return new Todo(input.substring(TODO_OFFSET).trim());
     }
 
-    public static Deadline parseDeadline(String input) throws BuddyException {
-        if (!input.contains(" /by ")) {
-            throw new BuddyException("When am I supposed to do this by?? " +
-                    "Format: deadline [name] /by [deadline]!");
-        }
-        String[] parts = input.substring(DEADLINE_OFFSET).split(" /by ", 2);
-        if (parts[0].trim().isEmpty() || parts[1].trim().isEmpty()) {
-            throw new BuddyException("Hello please fill in the description and deadline time!! " +
-                    "Format: deadline [name] /by [deadline]!");
-        }
-        return new Deadline(parts[0].trim(), parts[1].trim());
-    }
+//    public static Deadline parseDeadline(String input) throws BuddyException {
+//        if (!input.contains(" /by ")) {
+//            throw new BuddyException("When am I supposed to do this by?? " +
+//                    "Format: deadline [name] /by [deadline]!");
+//        }
+//        String[] parts = input.substring(DEADLINE_OFFSET).split(" /by ", 2);
+//        if (parts[0].trim().isEmpty() || parts[1].trim().isEmpty()) {
+//            throw new BuddyException("Hello please fill in the description and deadline time!! " +
+//                    "Format: deadline [name] /by [deadline]!");
+//        }
+//        return new Deadline(parts[0].trim(), parts[1].trim());
+//    }
 
     public static Event parseEvent(String input) throws BuddyException {
         if (!input.contains(" /from") || !input.contains(" /to")) {
@@ -73,5 +76,22 @@ public class Parser {
 
     public static int parseDeleteIndex(String input) throws BuddyException {
         return parseTaskIndex(input, "delete", DELETE_OFFSET);
+    }
+
+    public static Deadline parseDeadline(String input) throws BuddyException {
+        if (!input.contains(" /by ")) {
+            throw new BuddyException("When am I supposed to do this by?? " +
+                    "Format: deadline [name] /by yyyy-mm-dd");
+        }
+        String[] parts = input.substring(DEADLINE_OFFSET).split(" /by ", 2);
+
+        try {
+            // Attempt to parse the date string
+            LocalDate date = LocalDate.parse(parts[1].trim());
+            return new Deadline(parts[0].trim(), date);
+        } catch (DateTimeParseException e) {
+            throw new BuddyException("Please fill in the description and deadline time!! " +
+                    "Format: deadline [name] /by yyyy-mm-dd");
+        }
     }
 }
