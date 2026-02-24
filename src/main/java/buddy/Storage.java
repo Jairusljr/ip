@@ -32,7 +32,7 @@ public class Storage {
         }
     }
 
-    public ArrayList<Task> loadTasks() {
+    public ArrayList<Task> loadTasks() throws BuddyException {
         ArrayList<Task> tasks = new ArrayList<>();
         try {
             loadDataFile();
@@ -67,12 +67,12 @@ public class Storage {
                 }
             }
         } catch (IOException e) {
-            System.out.println("Woof! I couldn't load your previous list. Starting fresh!");
+            throw new BuddyException("File reading failed!");
         }
         return tasks;
     }
 
-    public void saveTasks(ArrayList<Task> tasks) {
+    public void saveTasks(ArrayList<Task> tasks) throws BuddyException{
         try {
             FileWriter fw = new FileWriter(FILE_PATH);
             for (Task t : tasks) {
@@ -80,7 +80,7 @@ public class Storage {
             }
             fw.close();
         } catch (IOException e) {
-            System.out.println("Whimper... I couldn't save your tasks!");
+            throw new BuddyException("Whimper... I couldn't save your tasks!");
         }
     }
 

@@ -15,12 +15,17 @@ import buddy.task.Todo;
 public class Buddy {
     private Ui ui;
     private Storage storage;
-    private ArrayList<Task> tasks;
+    private TaskList tasks;
 
     public Buddy() {
         ui = new Ui();
         storage = new Storage(FILE_PATH, DIR_PATH);
-        this.tasks = storage.loadTasks();
+        try {
+            this.tasks = new TaskList(storage.loadTasks());
+        } catch (BuddyException e) {
+            ui.printErrorMessage("I couldn't load your old list, woof! Starting fresh.");
+            this.tasks = new TaskList();
+        }
     }
 
     public static void main(String[] args) {
@@ -44,7 +49,7 @@ public class Buddy {
     private static final int MARK_OFFSET = 5;
     private static final int UNMARK_OFFSET = 7;
     private static final int DELETE_OFFSET = 7;
-    
+
 
     /**
      * Reads and processes user commands until 'bye' is received.
@@ -69,7 +74,7 @@ public class Buddy {
 
     private void processCommand(String line) throws BuddyException {
         if (line.equals("list")) {
-            ui.printTaskList(tasks);
+            ui.printTaskList(tasks.getAllTasks());
         } else if (line.startsWith("mark")) {
             handleMarkTask(line);
         } else if (line.startsWith("unmark")) {
@@ -101,8 +106,8 @@ public class Buddy {
                 throw new BuddyException("I can't mark that... Task " + (index + 1) + " doesn't exist!");
             }
 
-            tasks.get(index).markAsDone();
-            storage.saveTasks(tasks);
+            tasks.markTask(index);
+            storage.saveTasks(tasks.getAllTasks());
             ui.printStatusUpdate("Awesome! I've checked this off your list:", tasks.get(index));
         } catch (NumberFormatException e) {
             throw new BuddyException("I need a number to mark the task, not words!");
@@ -121,8 +126,9 @@ public class Buddy {
             if (index < 0 || index >= tasks.size()) {
                 throw new BuddyException("I can't unmark that... Task " + (index + 1) + " doesn't exist!");
             }
-            tasks.get(index).unmarkAsDone();
-            storage.saveTasks(tasks);
+
+            tasks.unmarkTask(index);
+            storage.saveTasks(tasks.getAllTasks());
             ui.printStatusUpdate("No problem, I've put this back on the list for you:", tasks.get(index));
         } catch (NumberFormatException e) {
             throw new BuddyException("I need a number to unmark the task, not words!");
@@ -137,7 +143,7 @@ public class Buddy {
         String description = line.substring(TODO_OFFSET).trim();
         Task newTask = new Todo(description);
         tasks.add(newTask);
-        storage.saveTasks(tasks);
+        storage.saveTasks(tasks.getAllTasks());
         ui.printTaskAdded(newTask, tasks.size());
     }
 
@@ -156,7 +162,7 @@ public class Buddy {
 
         Task newTask = new Deadline(parts[0], parts[1]);
         tasks.add(newTask);
-        storage.saveTasks(tasks);
+        storage.saveTasks(tasks.getAllTasks());
         ui.printTaskAdded(newTask, tasks.size());
     }
 
@@ -174,7 +180,7 @@ public class Buddy {
         }
         Task newTask = new Event(parts[0], parts[1], parts[2]);
         tasks.add(newTask);
-        storage.saveTasks(tasks);
+        storage.saveTasks(tasks.getAllTasks());
         ui.printTaskAdded(newTask, tasks.size());
     }
 
@@ -191,7 +197,7 @@ public class Buddy {
             }
 
             Task removedTask = tasks.remove(index);
-            storage.saveTasks(tasks);
+            storage.saveTasks(tasks.getAllTasks());
             ui.printTaskDeleted(removedTask, tasks.size());
         } catch (NumberFormatException e) {
             throw new BuddyException("I need a number to delete the task, not words!");
