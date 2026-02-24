@@ -66,6 +66,13 @@ public class Ui {
     }
 
     public void printMatchingTasks(ArrayList<Task> matchingTasks, String keyword) {
+        if(matchingTasks.isEmpty()) {
+            System.out.println(HORIZONTAL_LINE);
+            System.out.println("I couldn't find any tasks containing " + keyword +"!");
+            System.out.println(HORIZONTAL_LINE);
+            return;
+        }
+
         System.out.println(HORIZONTAL_LINE);
         System.out.println("Here are the tasks containing " + keyword + " in your list:");
         for (int i = 0; i < matchingTasks.size(); i++) {

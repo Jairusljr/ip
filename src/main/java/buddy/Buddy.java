@@ -140,11 +140,6 @@ public class Buddy {
     private void handleFind(String line) throws BuddyException {
         String keyword = Parser.parseFindKeyword(line);
         ArrayList<Task> matchingTasks = tasks.findTasks(keyword);
-
-        if (matchingTasks.isEmpty()) {
-            ui.printErrorMessage("I couldn't find any tasks containing " + keyword +"!");
-        } else {
-            ui.printMatchingTasks(matchingTasks,keyword);
-        }
+        ui.printMatchingTasks(matchingTasks,keyword);
     }
 }
