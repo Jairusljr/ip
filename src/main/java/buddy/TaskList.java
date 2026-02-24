@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import buddy.task.Task;
 
 public class TaskList {
-    private ArrayList<Task> tasks;
+    private final ArrayList<Task> tasks;
 
     /**
      * Use this constructor when loading existing tasks from your storage.
@@ -24,10 +24,6 @@ public class TaskList {
         tasks.add(task);
     }
 
-    public Task remove(int index) {
-        return tasks.remove(index);
-    }
-
     public Task get(int index) {
         return tasks.get(index);
     }
@@ -43,11 +39,26 @@ public class TaskList {
         return tasks;
     }
 
-    public void markTask(int index) {
-        tasks.get(index).markAsDone();
+    private void validateIndex(int index, String action) throws BuddyException {
+        if (index < 0 || index >= tasks.size()) {
+            throw new BuddyException("I can't " + action + " that... Task " + (index + 1) + " doesn't exist!");
+        }
     }
 
-    public void unmarkTask(int index) {
+    public Task markTask(int index) throws BuddyException {
+        validateIndex(index, "mark");
+        tasks.get(index).markAsDone();
+        return tasks.get(index);
+    }
+
+    public Task unmarkTask(int index) throws BuddyException {
+        validateIndex(index, "unmark");
         tasks.get(index).unmarkAsDone();
+        return tasks.get(index);
+    }
+
+    public Task remove(int index) throws BuddyException {
+        validateIndex(index, "delete");
+        return tasks.remove(index);
     }
 }
