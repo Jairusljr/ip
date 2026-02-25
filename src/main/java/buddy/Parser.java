@@ -86,7 +86,7 @@ public class Parser {
         }
         String[] parts = input.substring(EVENT_OFFSET).split(" /from | /to ", 3);
         if (parts.length < 3 || parts[0].trim().isEmpty() || parts[1].trim().isEmpty() || parts[2].trim().isEmpty()) {
-            throw new BuddyException("Your event is missing details!");
+            throw new BuddyException("Your event is missing details! Format: event [name] /from [start] /to [end]");
         }
         return new Event(parts[0].trim(), parts[1].trim(), parts[2].trim());
     }
@@ -112,7 +112,8 @@ public class Parser {
             String indexPart = trimmed.substring(offset).trim();
             return Integer.parseInt(indexPart) - 1;
         } catch (NumberFormatException | StringIndexOutOfBoundsException e) {
-            throw new BuddyException("I need a number to " + commandName + " the task, not words!");
+            throw new BuddyException("I need a number to " + commandName + " the task, not words! " +
+                    "Format: " + commandName + " [number]");
         }
     }
 

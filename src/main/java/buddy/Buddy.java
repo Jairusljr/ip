@@ -45,7 +45,7 @@ public class Buddy {
         ui.printGreeting();
         while (true) {
             String line = ui.readCommand();
-            if (line.equalsIgnoreCase("bye")) {
+            if (Parser.getCommandWord(line).equals("bye")) {
                 break;
             }
             try {
