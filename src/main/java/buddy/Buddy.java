@@ -13,6 +13,10 @@ public class Buddy {
     private Storage storage;
     private TaskList tasks;
 
+    /**
+     * Initializes Buddy by setting up the UI, Storage, and loading existing tasks.
+     * If loading fails, it starts with an empty task list.
+     */
     public Buddy() {
         ui = new Ui();
         storage = new Storage(FILE_PATH, DIR_PATH);
@@ -24,11 +28,19 @@ public class Buddy {
         }
     }
 
+    /**
+     * The main entry point for the Buddy application.
+     * @param args Command line arguments (not used).
+     */
     public static void main(String[] args) {
         Buddy buddy = new Buddy();
         buddy.run();
     }
 
+    /**
+     * Starts the main execution loop of the chatbot.
+     * Continues to read and process commands until the user says "bye".
+     */
     public void run() {
         ui.printGreeting();
         while (true) {
@@ -48,6 +60,11 @@ public class Buddy {
     private static final String FILE_PATH = "./data/buddy.txt";
     private static final String DIR_PATH = "./data/";
 
+    /**
+     * Processes a single user command string.
+     * @param line The raw input string from the user.
+     * @throws BuddyException If the command is unrecognized or parsing fails.
+     */
     private void processCommand(String line) throws BuddyException {
         String commandWord = Parser.getCommandWord(line);
 
@@ -117,7 +134,7 @@ public class Buddy {
         ui.printTaskAdded(newTask, tasks.size());
     }
 
-    public void deleteTask(String line) throws BuddyException {
+    private void deleteTask(String line) throws BuddyException {
         int index = Parser.parseDeleteIndex(line);
         Task removedTask = tasks.remove(index);
         storage.saveTasks(tasks.getAllTasks());
