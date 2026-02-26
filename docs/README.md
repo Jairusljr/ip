@@ -1,6 +1,9 @@
 # Buddy User Guide
 Buddy is a lightweight, command-line chatbot designed to help you organize your life with the loyalty of a golden retriever. 
 Whether it's a simple task, a strict deadline, or an upcoming event, Buddy's got your back (and your list).
+
+---
+
 ![Buddy Screenshot](img.png)
 
 ---
