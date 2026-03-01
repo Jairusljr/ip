@@ -126,7 +126,7 @@ public class Ui {
      * @param keyword The search term used to filter the tasks.
      */
     public void printMatchingTasks(ArrayList<Task> matchingTasks, String keyword) {
-        if(matchingTasks.isEmpty()) {
+        if (matchingTasks.isEmpty()) {
             System.out.println(HORIZONTAL_LINE);
             System.out.println("I couldn't find any tasks containing " + keyword +"!");
             System.out.println(HORIZONTAL_LINE);
@@ -136,7 +136,7 @@ public class Ui {
         System.out.println(HORIZONTAL_LINE);
         System.out.println("Here are the tasks containing " + keyword + " in your list:");
         for (int i = 0; i < matchingTasks.size(); i++) {
-            System.out.println((i + 1) + "." + matchingTasks.get(i));
+            System.out.println((i + 1) + ". " + matchingTasks.get(i));
         }
         System.out.println(HORIZONTAL_LINE);
     }

@@ -22,18 +22,18 @@ import buddy.task.Todo;
  * </p>
  */
 public class Storage {
-    private final String FILE_PATH;
-    private final String DIR_PATH;
+    private final String filePath;
+    private final String dirPath;
 
     /**
      * Initializes a new <code>Storage</code> object with specified paths.
      *
-     * @param FILE_PATH The full path to the save file.
-     * @param DIR_PATH The directory containing the save file.
+     * @param filePath The full path to the save file.
+     * @param dirPath The directory containing the save file.
      */
-    public Storage(String FILE_PATH, String DIR_PATH) {
-        this.FILE_PATH = FILE_PATH;
-        this.DIR_PATH = DIR_PATH;
+    public Storage(String filePath, String dirPath) {
+        this.filePath = filePath;
+        this.dirPath = dirPath;
     }
 
     /**
@@ -43,12 +43,12 @@ public class Storage {
      * @throws IOException If there is an error during file or directory creation.
      */
     public void loadDataFile() throws IOException {
-        File directory = new File(DIR_PATH);
+        File directory = new File(dirPath);
         if (!directory.exists()) {
             directory.mkdirs();
         }
 
-        File file = new File(FILE_PATH);
+        File file = new File(filePath);
         if (!file.exists()) {
             file.createNewFile();
         }
@@ -68,13 +68,15 @@ public class Storage {
         ArrayList<Task> tasks = new ArrayList<>();
         try {
             loadDataFile();
-            File f = new File(FILE_PATH);
+            File f = new File(filePath);
             Scanner s = new Scanner(f);
 
             while (s.hasNext()) {
                 String line = s.nextLine();
                 String[] parts = line.split(" \\| ");
-                if (parts.length < 3) continue;
+                if (parts.length < 3) {
+                    continue;
+                }
 
                 String type = parts[0];
                 boolean isDone = parts[1].equals("1");
@@ -102,7 +104,9 @@ public class Storage {
                 }
 
                 if (task != null) {
-                    if (isDone) task.markAsDone();
+                    if (isDone) {
+                        task.markAsDone();
+                    }
                     tasks.add(task);
                 }
             }
@@ -118,9 +122,9 @@ public class Storage {
      * @param tasks The {@link ArrayList} of tasks to be persisted.
      * @throws BuddyException If an error occurs while writing to the file.
      */
-    public void saveTasks(ArrayList<Task> tasks) throws BuddyException{
+    public void saveTasks(ArrayList<Task> tasks) throws BuddyException {
         try {
-            FileWriter fw = new FileWriter(FILE_PATH);
+            FileWriter fw = new FileWriter(filePath);
             for (Task t : tasks) {
                 fw.write(formatTaskForFile(t) + System.lineSeparator());
             }

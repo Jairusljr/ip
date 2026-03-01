@@ -7,7 +7,7 @@ package buddy.task;
  * and an end time/date in addition to the standard task description.
  * </p>
  */
-public class Event extends Task{
+public class Event extends Task {
     protected String from;
     protected String to;
 

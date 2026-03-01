@@ -19,7 +19,7 @@ public class Deadline extends Task {
      * @param description A summary of the task.
      * @param by The due date of the task.
      */
-    public Deadline (String description, LocalDate by) {
+    public Deadline(String description, LocalDate by) {
         super(description);
         this.by = by;
     }
